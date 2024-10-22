@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <style>
+            body {
+                background-color: #24273a;
+            }
+
+            .mainContent {
+                color: #cad3f5;
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                justify-content: center;
+                min-height: 20vh;
+            }
+
+            .input-div {
+                border: 2px solid #363a4f;
+                border-radius: 5px;
+            }
+
+            .submit-button {
+                border: none;
+                background-color: #ed8796;
+                display: inline-block;
+                text-align: center;
+                font-size 16px;
+                cursor: pointer;
+                margin: 4px 3px;
+            }
+
+            .disabled {
+                background-color: #494d64;
+                color: #cad3f5;
+                cursor: not-allowed;
+            }
+        </style>
+        <title>Posting on Bluesky using API</title>
+    </head>
+    <body>
+        <div class="mainContent">
+            <h1>Post with Bluesky API</h1>
+            <br>
+            <div class="input-div">
+                <p>@ <input type="text" id="accountInput" placeholder="your.account.handle" required /></p>
+            </div>
+            <br>
+            <div class="input-div">
+                <p>🔑 <input type="text" id="passwordInput" placeholder="App password here" required /></p>
+            </div>
+            <br>
+            <br>
+            <div class="input-div">
+                <input type="text" id="urlInput" size="40" placeholder="Post or reply URL (Leave blank for account post)" />
+            </div>
+            <br>
+            <div class="input-div">
+                <textarea id="postText" cols="40" rows="5">Back to the future</textarea>
+            </div>
+            <br>
+            <div class="input-div">
+                <input id="dateInput" type="datetime-local" min="0001-01-01" max="9999-31-12" value="2024-10-21" />
+            </div>
+            <br>
+            <button id="submit-btn" class="submit-button">Submit</button>
+            <br>
+            <p id="statusMessage"></p>
+        </div>
+    </body>
+    <script>
+        const statusMessage = document.getElementById("statusMessage");
+        const submitButton = document.getElementById("submit-btn");
+
+        function disableButton(button) {
+            button.disabled = true;
+            button.classList.add("disabled");
+        }
+
+        function enableButton(button) {
+            button.disabled = false;
+            button.classList.remove("disabled");
+        }
+
+        function validURL(str) {
+            var pattern = new RegExp('^(https?:\\/\\/)?'+ // protocol
+            '((([a-z\\d]([a-z\\d-]*[a-z\\d])*)\\.)+[a-z]{2,}|'+ // domain name
+            '((\\d{1,3}\\.){3}\\d{1,3}))'+ // OR ip (v4) address
+            '(\\:\\d+)?(\\/[-a-z\\d%_.~+]*)*'+ // port and path
+            '(\\?[;&a-z\\d%_.~+=-]*)?'+ // query string
+            '(\\#[-a-z\\d_]*)?$','i'); // fragment locator
+            return !!pattern.test(str);
+        }
+
+    submitButton.addEventListener("click", () => {
+        const urlInput = document.getElementById("urlInput").value;
+        const urlValid = validURL(urlInput);
+
+        const username = document.getElementById("accountInput").value;
+        const password = document.getElementById("passwordInput").value;
+
+        const text = document.getElementById("postText").value;
+        const date = document.getElementById("dateInput").value;
+
+        if (!username || !password) {
+            return statusMessage.textContent = "No username or password found";
+        }
+
+        if (!text) {
+            return statusMessage.textContent = "Please add the text you want to post";
+        }
+
+        if (urlValid == false && urlInput !== "") {
+            return statusMessage.textContent = "Invalid URL";
+        }
+
+        if (!date) {
+            return statusMessage.textContent = "Please set a date and time";
+        }
+
+        disableButton(submitButton);
+
+        statusMessage.textContent = "Attempting to log in and post \n After clicking submit, close the app for it to post";
+        post(urlInput, date, text, username, password)
+        enableButton(submitButton);
+    });
+    </script>
+</html>

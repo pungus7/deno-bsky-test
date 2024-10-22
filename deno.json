@@ -1,0 +1,9 @@
+{
+  "tasks": {
+    "run": "deno run --allow-read 'main.html style.css' --allow-net=bsky.social"
+  },
+  "imports": {
+    "@atproto/api": "npm:@atproto/api@^0.13.12",
+    "@webview/webview": "jsr:@webview/webview@^0.8.0"
+  }
+}
